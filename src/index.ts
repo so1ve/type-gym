@@ -1,1 +1,1 @@
-export { AllKeys } from "./all-keys";
+export type { AllKeys } from "./all-keys";
