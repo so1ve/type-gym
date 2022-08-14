@@ -23,6 +23,11 @@ $ pnpm add type-gym
 
 See [here](./docs) for documentation.
 
+## Todos
+
+* [ ] Docs
+* [ ] Tests
+
 ## License
 
 [MIT](./LICENSE) License © 2022 [Ray](https://github.com/so1ve)
