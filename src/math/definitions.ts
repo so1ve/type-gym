@@ -1,2 +1,2 @@
-export type StringNumber = `${number}`;
-export type StringNegativeNumber = `-${number}`;
+export type MathStringNumber = `${number}`;
+export type MathStringNegativeNumber = `-${number}`;

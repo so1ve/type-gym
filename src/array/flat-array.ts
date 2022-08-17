@@ -1,15 +1,15 @@
 import type { Equal } from "../utils";
-import type { Add, MaxOr } from "../math";
-import type { GetDepth } from "./get-depth";
+import type { MathAdd, MathMaxOr } from "../math";
+import type { ArrayGetDepth } from "./get-depth";
 
-type _GetSub<Arr> =
+type _ArrayGetSub<Arr> =
   Arr extends (infer V)[]
     ? V
     : Arr;
 
-type _FlatArray<Arr, N extends number, Count extends number = 0> =
+type _ArrayFlatArray<Arr, N extends number, Count extends number = 0> =
   Equal<N, Count> extends true
     ? Arr
-    : _FlatArray<_GetSub<Arr>, N, Add<Count, 1>>;
+    : _ArrayFlatArray<_ArrayGetSub<Arr>, N, MathAdd<Count, 1>>;
 
-export type FlatArray<Arr extends unknown[], N extends number> = _FlatArray<Arr, MaxOr<GetDepth<Arr>, N>>;
+export type ArrayFlatArray<Arr extends unknown[], N extends number> = _ArrayFlatArray<Arr, MathMaxOr<ArrayGetDepth<Arr>, N>>;

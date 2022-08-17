@@ -1,1 +1,1 @@
-export type Limit = string | number | bigint | boolean | null | undefined;
+export type CastLimit = string | number | bigint | boolean | null | undefined;

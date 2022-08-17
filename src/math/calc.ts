@@ -1,71 +1,71 @@
-import type { StringToNumber } from "../convert";
+import type { ConvertStringToNumber } from "../convert";
 import type { ToTuple } from "../utils/to-tuple";
-import type { Limit } from "../_cast";
-import type { IsEqual, IsGreaterThanOrEqual, IsPositive } from "./comparations";
-import type { StringNumber } from "./definitions";
+import type { CastLimit } from "../_cast";
+import type { MathIsEqual, MathIsGreaterThanOrEqual, MathIsPositive } from "./comparations";
+import type { MathStringNumber } from "./definitions";
 
-type _StringAbsolute<T> = T extends StringNumber ? T extends `-${infer V extends number}` ? V : StringToNumber<T> : never;
-export type Absolute<T extends Limit> = _StringAbsolute<`${T}`>;
+type _MathStringAbsolute<T> = T extends MathStringNumber ? T extends `-${infer V extends number}` ? V : ConvertStringToNumber<T> : never;
+export type MathAbsolute<T extends CastLimit> = _MathStringAbsolute<`${T}`>;
 
-type _StringToNegative<T> = T extends StringNumber ? T extends `-${infer V extends number}` ? V : StringToNumber<`-${T}`> : never;
-export type ToOpposite<T extends Limit> = T extends 0 ? 0 : _StringToNegative<`${T}`>;
+type _MathStringToOpposite<T> = T extends MathStringNumber ? T extends `-${infer V extends number}` ? V : ConvertStringToNumber<`-${T}`> : never;
+export type MathToOpposite<T extends CastLimit> = T extends 0 ? 0 : _MathStringToOpposite<`${T}`>;
 
 /**
  * P - Positive
  * N - Negative
  */
-type _AddPP<N1 extends number, N2 extends number> = [...ToTuple<N1>, ...ToTuple<N2>] extends { length: infer V extends number } ? V : never;
-type _AddNN<N1 extends number, N2 extends number> = StringToNumber<`-${_AddPP<Absolute<N1>, Absolute<N2>>}`>;
-type _AddNP<N1 extends number, N2 extends number> =
-  IsEqual<Absolute<N1>, N2> extends true
+type _MathAddPP<N1 extends number, N2 extends number> = [...ToTuple<N1>, ...ToTuple<N2>] extends { length: infer V extends number } ? V : never;
+type _MathAddNN<N1 extends number, N2 extends number> = ConvertStringToNumber<`-${_MathAddPP<MathAbsolute<N1>, MathAbsolute<N2>>}`>;
+type _MathAddNP<N1 extends number, N2 extends number> =
+  MathIsEqual<MathAbsolute<N1>, N2> extends true
     ? 0
-    : ToTuple<Absolute<N1>> extends [...ToTuple<N2>, ...infer Rest]
-      ? StringToNumber<`-${Rest["length"]}`>
-      : ToTuple<N2> extends [...ToTuple<Absolute<N1>>, ...infer Rest]
+    : ToTuple<MathAbsolute<N1>> extends [...ToTuple<N2>, ...infer Rest]
+      ? ConvertStringToNumber<`-${Rest["length"]}`>
+      : ToTuple<N2> extends [...ToTuple<MathAbsolute<N1>>, ...infer Rest]
         ? Rest["length"]
         : never;
-type _AddPN<N1 extends number, N2 extends number> = _AddNP<N2, N1>;
-export type Add<N1 extends number, N2 extends number> =
-  IsPositive<N1> extends true
-    ? IsPositive<N2> extends true
-      ? _AddPP<N1, N2>
-      : _AddPN<N1, N2>
-    : IsPositive<N2> extends true
-      ? _AddNP<N1, N2>
-      : _AddNN<N1, N2>;
+type _MathAddPN<N1 extends number, N2 extends number> = _MathAddNP<N2, N1>;
+export type MathAdd<N1 extends number, N2 extends number> =
+  MathIsPositive<N1> extends true
+    ? MathIsPositive<N2> extends true
+      ? _MathAddPP<N1, N2>
+      : _MathAddPN<N1, N2>
+    : MathIsPositive<N2> extends true
+      ? _MathAddNP<N1, N2>
+      : _MathAddNN<N1, N2>;
 
-export type Sub<N1 extends number, N2 extends number> = Add<N1, ToOpposite<N2>>;
+export type MathSub<N1 extends number, N2 extends number> = MathAdd<N1, MathToOpposite<N2>>;
 
-type _TimePP<N1 extends number, N2 extends number, Count extends number = 0, Sum extends number = 0> =
+type _MathTimePP<N1 extends number, N2 extends number, Count extends number = 0, Sum extends number = 0> =
   Count extends N2
     ? Sum
-    : _TimePP<N1, N2, Add<Count, 1>, Add<Sum, N1>>;
-type _TimeNN<N1 extends number, N2 extends number> = _TimePP<Absolute<N1>, Absolute<N2>>;
-type _TimeNP<N1 extends number, N2 extends number> = ToOpposite<_TimePP<Absolute<N1>, N2>>;
-type _TimePN<N1 extends number, N2 extends number> = _TimeNP<N2, N1>;
-export type Time<N1 extends number, N2 extends number> =
-  IsPositive<N1> extends true
-    ? IsPositive<N2> extends true
-      ? _TimePP<N1, N2>
-      : _TimePN<N1, N2>
-    : IsPositive<N2> extends true
-      ? _TimeNP<N1, N2>
-      : _TimeNN<N1, N2>;
+    : _MathTimePP<N1, N2, MathAdd<Count, 1>, MathAdd<Sum, N1>>;
+type _MathTimeNN<N1 extends number, N2 extends number> = _MathTimePP<MathAbsolute<N1>, MathAbsolute<N2>>;
+type _MathTimeNP<N1 extends number, N2 extends number> = MathToOpposite<_MathTimePP<MathAbsolute<N1>, N2>>;
+type _MathTimePN<N1 extends number, N2 extends number> = _MathTimeNP<N2, N1>;
+export type MathTime<N1 extends number, N2 extends number> =
+  MathIsPositive<N1> extends true
+    ? MathIsPositive<N2> extends true
+      ? _MathTimePP<N1, N2>
+      : _MathTimePN<N1, N2>
+    : MathIsPositive<N2> extends true
+      ? _MathTimeNP<N1, N2>
+      : _MathTimeNN<N1, N2>;
 
-type _DivPP<N1 extends number, N2 extends number, Count extends number = 0, Remain extends number = N1> =
-  IsGreaterThanOrEqual<Remain, N2> extends true
-    ? _DivPP<N1, N2, Add<Count, 1>, Sub<Remain, N2>>
+type _MathDivPP<N1 extends number, N2 extends number, Count extends number = 0, Remain extends number = N1> =
+  MathIsGreaterThanOrEqual<Remain, N2> extends true
+    ? _MathDivPP<N1, N2, MathAdd<Count, 1>, MathSub<Remain, N2>>
     : Count;
-type _DivNN<N1 extends number, N2 extends number> = _DivPP<Absolute<N1>, Absolute<N2>>;
-type _DivNP<N1 extends number, N2 extends number> = ToOpposite<_DivPP<Absolute<N1>, N2>>;
-type _DivPN<N1 extends number, N2 extends number> = _DivNP<N2, N1>;
-export type Div<N1 extends number, N2 extends number> =
-  IsPositive<N1> extends true
-    ? IsPositive<N2> extends true
-      ? _DivPP<N1, N2>
-      : _DivPN<N1, N2>
-    : IsPositive<N2> extends true
-      ? _DivNP<N1, N2>
-      : _DivNN<N1, N2>;
+type _MathDivNN<N1 extends number, N2 extends number> = _MathDivPP<MathAbsolute<N1>, MathAbsolute<N2>>;
+type _MathDivNP<N1 extends number, N2 extends number> = MathToOpposite<_MathDivPP<MathAbsolute<N1>, N2>>;
+type _MathDivPN<N1 extends number, N2 extends number> = _MathDivNP<N2, N1>;
+export type MathDiv<N1 extends number, N2 extends number> =
+  MathIsPositive<N1> extends true
+    ? MathIsPositive<N2> extends true
+      ? _MathDivPP<N1, N2>
+      : _MathDivPN<N1, N2>
+    : MathIsPositive<N2> extends true
+      ? _MathDivNP<N1, N2>
+      : _MathDivNN<N1, N2>;
 
-export type Mod<N1 extends number, N2 extends number> = Sub<N1, Time<Div<N1, N2>, N2>>;
+export type MathMod<N1 extends number, N2 extends number> = MathSub<N1, MathTime<MathDiv<N1, N2>, N2>>;
