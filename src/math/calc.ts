@@ -1,3 +1,4 @@
+import type { ArrayGetLength } from "../array";
 import type { ConvertStringToNumber } from "../convert";
 import type { ToTuple } from "../utils/to-tuple";
 import type { CastLimit } from "../_cast";
@@ -14,7 +15,7 @@ export type MathToOpposite<T extends CastLimit> = T extends 0 ? 0 : _MathStringT
  * P - Positive
  * N - Negative
  */
-type _MathAddPP<N1 extends number, N2 extends number> = [...ToTuple<N1>, ...ToTuple<N2>] extends { length: infer V extends number } ? V : never;
+type _MathAddPP<N1 extends number, N2 extends number> = ArrayGetLength<[...ToTuple<N1>, ...ToTuple<N2>]>;
 type _MathAddNN<N1 extends number, N2 extends number> = ConvertStringToNumber<`-${_MathAddPP<MathAbsolute<N1>, MathAbsolute<N2>>}`>;
 type _MathAddNP<N1 extends number, N2 extends number> =
   MathIsEqual<MathAbsolute<N1>, N2> extends true
