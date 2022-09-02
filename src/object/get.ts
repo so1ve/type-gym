@@ -1,3 +1,6 @@
+// Author: [Ho Thach Nguyen](https://github.com/hauseyo)
+// Adapted from https://github.com/type-challenges/type-challenges/issues/2464
+
 type UnionToIntersection<T> =
   (T extends unknown
     ? (x: T) => unknown
@@ -25,6 +28,14 @@ type TransformKey<Object, RootKey> = {
 
 type UnionKeys<Root> = UnionToIntersection<DistributiveKeys<Root>>;
 
+/**
+ * @author [Ho Thach Nguyen](https://github.com/hauseyo)
+ * @see https://github.com/type-challenges/type-challenges/issues/2464
+ */
 export type ObjectGetKeys<Object> = keyof UnionKeys<Object>;
 
+/**
+ * @author [Ho Thach Nguyen](https://github.com/hauseyo)
+ * @see https://github.com/type-challenges/type-challenges/issues/2464
+ */
 export type ObjectGet<Object, Keys extends keyof UnionKeys<Object>> = UnionKeys<Object>[Keys];
